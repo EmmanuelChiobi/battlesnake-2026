@@ -47,6 +47,7 @@ def end(game_state: typing.Dict):
 # See https://docs.battlesnake.com/api/example-move for available data
 def move(game_state: typing.Dict) -> typing.Dict:
 
+    # this array is saying "is this move going to end in a collision or not"
     is_move_safe = {"up": True, "down": True, "left": True, "right": True}
 
     # We've included code to prevent your Battlesnake from moving backwards
@@ -81,21 +82,28 @@ def move(game_state: typing.Dict) -> typing.Dict:
     if (my_head["y"] == board_height):
         # implies the head is at the top of the board
         is_move_safe["up"] = False
-    
-    #
-    # Flood-fill the board here, we need to know which squares are open and which are occupied near our current position
-    #
-
-    #
-    # Can we use pre-existing game state?
-    #
 
 
     # TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-    # my_body = game_state['you']['body']
+    my_body = game_state['you']['body'] # the part immediately after the neck
+    for i in range(1, game_state['you']['length']-1):
+        # last part of length is the tail itself, which always recedes so do not count the tail in the segments we are checking.
+        if ((my_head["y"] - 1) == my_body[i]["y"]):
+            # implies that a part of the snake body is right below the head
+            is_move_safe["down"] = False
+        if ((my_head["y"] + 1) == my_body[i]["y"]):
+            # implies that a part of the snake body is right above the head
+            is_move_safe["up"] = False
+        if ((my_head["x"] - 1) == my_body[i]["x"]):
+            # implies that a part of the snake body is to the left the head
+            is_move_safe["down"] = False
+        if ((my_head["x"] + 1) == my_body[i]["x"]):
+            # implies that a part of the snake body is to the right the head
+            is_move_safe["up"] = False
 
     # TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
     # opponents = game_state['board']['snakes']
+
 
 
     # Are there any safe moves left?
@@ -114,6 +122,8 @@ def move(game_state: typing.Dict) -> typing.Dict:
     # do a decision analysis based on Monte Carlo tree searching of what opponent moves
     # are going to be most optimal.
     #
+
+    # 
     #next_move = random.choice(safe_moves)
 
     # TODO: Step 4 - Move towards food instead of random, to regain health and survive longer

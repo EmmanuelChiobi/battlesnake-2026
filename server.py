@@ -37,7 +37,7 @@ def run_server(handlers: typing.Dict):
         )
         return response
 
-    host = "159.65.247.21"
+    host =  "0.0.0.0" #Static IP: "159.65.247.21"
     port = int(os.environ.get("PORT", "8000"))
 
     logging.getLogger("werkzeug").setLevel(logging.ERROR)

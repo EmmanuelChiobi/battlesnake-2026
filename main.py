@@ -22,7 +22,7 @@ def info() -> typing.Dict:
 
     return {
         "apiversion": "1",
-        "author": "",  # TODO: Your Battlesnake Username
+        "author": "Shadow Wizard Money Gang",  # TODO: Your Battlesnake Username
         "color": "#888888",  # TODO: Choose color
         "head": "default",  # TODO: Choose head
         "tail": "default",  # TODO: Choose tail
@@ -38,6 +38,9 @@ def start(game_state: typing.Dict):
 def end(game_state: typing.Dict):
     print("GAME OVER\n")
 
+#
+# High-level strategy:
+# - 
 
 # move is called on every turn and returns your next move
 # Valid moves are "up", "down", "left", or "right"
@@ -63,14 +66,37 @@ def move(game_state: typing.Dict) -> typing.Dict:
         is_move_safe["up"] = False
 
     # TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
-    # board_width = game_state['board']['width']
-    # board_height = game_state['board']['height']
+    board_width = game_state['board']['width']
+    board_height = game_state['board']['height']
+    
+    if (my_head["x"] == 0):
+        # implies that the head is right at the left edge of the board
+        is_move_safe["left"] = False
+    if (my_head["x"] == board_width):
+        # implies that the head is at the right edge of the board
+        is_move_safe["right"] = False
+    if (my_head["y"] == 0):
+        # implies the head is at the bottom of the board
+        is_move_safe["down"] = False
+    if (my_head["y"] == board_height):
+        # implies the head is at the top of the board
+        is_move_safe["up"] = False
+    
+    #
+    # Flood-fill the board here, we need to know which squares are open and which are occupied near our current position
+    #
+
+    #
+    # Can we use pre-existing game state?
+    #
+
 
     # TODO: Step 2 - Prevent your Battlesnake from colliding with itself
     # my_body = game_state['you']['body']
 
     # TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
     # opponents = game_state['board']['snakes']
+
 
     # Are there any safe moves left?
     safe_moves = []
@@ -79,11 +105,16 @@ def move(game_state: typing.Dict) -> typing.Dict:
             safe_moves.append(move)
 
     if len(safe_moves) == 0:
+        # Any move that isn't safe will automatically be game over for us.
         print(f"MOVE {game_state['turn']}: No safe moves detected! Moving down")
         return {"move": "down"}
 
-    # Choose a random move from the safe ones
-    next_move = random.choice(safe_moves)
+    #
+    # Original code commented out, if we have safe moves to pick from, 
+    # do a decision analysis based on Monte Carlo tree searching of what opponent moves
+    # are going to be most optimal.
+    #
+    #next_move = random.choice(safe_moves)
 
     # TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
     # food = game_state['board']['food']

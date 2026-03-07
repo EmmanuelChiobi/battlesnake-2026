@@ -3,3 +3,4 @@ NJIT Battlesnake 2026 repo for Shadow Wizard Money Gang
 
 ## Members
 - Emmanuel Chiobi`
+- Gianfranco Martinez

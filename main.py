@@ -10,6 +10,8 @@
 # To get you started we've included code to prevent your Battlesnake from moving backwards.
 # For more info see docs.battlesnake.com
 
+# DISCLAIMER: Flood fill + flood fill game state implemented using AI
+
 import random
 import typing
 
@@ -91,115 +93,114 @@ def AStar(goal, my_head,board_height, board_width,is_move_safe):
 
 def flood_fill(coordinate: typing.Dict, occupied_squares: typing.Dict, filled_squares: typing.Dict, width, height):
     # base case: x coordinate is < 0
-    if(coordinate['x'] < 0):
+    if coordinate['x'] < 0:
         return
-    # base case: x coordinate is > width of board
-    if(coordinate['x'] > width):
+
+    # base case: x coordinate is >= width of board
+    if coordinate['x'] >= width:
         return
+
     # base case: y coordinate is < 0
-    if(coordinate['y'] < 0):
+    if coordinate['y'] < 0:
         return
-    # base case: y coordinate is > height of board
-    if(coordinate['y'] > height):
+
+    # base case: y coordinate is >= height of board
+    if coordinate['y'] >= height:
         return
-    # base case: we are in an occupied square, skip it.
-    for dict in occupied_squares:
-        if (coordinate['x'] in dict['x']) and (coordinate['y'] in dict['y']):
+
+    # base case: we are in an occupied square
+    for square in occupied_squares:
+        if coordinate['x'] == square['x'] and coordinate['y'] == square['y']:
             return
-    # base case, we're in a filled square, skip it.
-    for dict in filled_squares:
-        if (coordinate['x'] in dict['x']) and (coordinate['y'] in dict['y']):
+
+    # base case: already filled
+    for square in filled_squares:
+        if coordinate['x'] == square['x'] and coordinate['y'] == square['y']:
             return
-    
-    # append the current coordinate to the filled_squares list.
+
+    # append the current coordinate
     new_coordinate_to_be_filled = {
-        "x": -1,
-        "y": -1
+        "x": coordinate['x'],
+        "y": coordinate['y']
     }
-    new_coordinate_to_be_filled['x'] = coordinate['x']
-    new_coordinate_to_be_filled['y'] = coordinate['y']
+
     filled_squares.append(new_coordinate_to_be_filled)
 
     next_left = {
         "x": coordinate['x'] - 1,
         "y": coordinate['y']
     }
-    next_left = typed.Dict(next_left)
+
     next_up = {
         "x": coordinate['x'],
         "y": coordinate['y'] + 1
     }
-    next_up = typed.Dict(next_up)
+
     next_right = {
         "x": coordinate['x'] + 1,
         "y": coordinate['y']
     }
-    next_right = typed.Dict(next_right)
+
     next_down = {
         "x": coordinate['x'],
         "y": coordinate['y'] - 1
     }
-    next_down = typed.Dict(next_down)
-    #
-    # recursively fill the squares in the cardinal directions.
-    #
+
     flood_fill(next_left, occupied_squares, filled_squares, width, height)
     flood_fill(next_up, occupied_squares, filled_squares, width, height)
     flood_fill(next_right, occupied_squares, filled_squares, width, height)
     flood_fill(next_down, occupied_squares, filled_squares, width, height)
 
-def flood_fill_game_state(game_state: typing.Dict) -> typing.Dict:
-    # first get the width and height of the board from game state.
+def flood_fill_game_state(game_state: typing.Dict):
+
     board_width = game_state['board']['width']
     board_height = game_state['board']['height']
+
     empty_square_found = False
+
     coordinate = {
         "x": -1,
         "y": -1
     }
-    #
-    # This contains where all snake body parts are
-    #
-    occupied_squares = {}
-    occupied_squares = typing.Dict(occupied_squares)
 
-    #
-    # This dictionary will contain which squares get filled.
-    #
-    filled_squares = {}
-    filled_squares = typing.Dict(filled_squares)
+    occupied_squares = []
 
-    # check for any empty squares on the corners, best to start the flood-fill analysis there.
-    # if a snake occupies one corner
-    for dict in game_state['snakes']:
-        occupied_squares.append(dict["body"])
-        if dict['head']['x'] != 0:
-            coordinate['x'] = 0
-            if dict['head']['y'] != 0:
-                empty_square_found = True
-                break
-            if dict['head']['y'] != board_height:
-                empty_square_found = True
-                break
-        elif dict['head']['x'] != board_width:
-            coordinate['x'] = board_width
-            if dict['head']['y'] != 0:
-                empty_square_found = True
-                break
-            if dict['head']['y'] != board_height:
-                empty_square_found = True
-                break
-    if empty_square_found == True:
-        # Easy case, start the flood fill from the corners.
+    filled_squares = []
+
+    # collect snake bodies
+    for snake in game_state['board']['snakes']:
+        for part in snake["body"]:
+            occupied_squares.append(part)
+
+    # check corners
+    if not any(s["x"] == 0 and s["y"] == 0 for s in occupied_squares):
+        coordinate["x"] = 0
+        coordinate["y"] = 0
+        empty_square_found = True
+
+    elif not any(s["x"] == 0 and s["y"] == board_height-1 for s in occupied_squares):
+        coordinate["x"] = 0
+        coordinate["y"] = board_height-1
+        empty_square_found = True
+
+    elif not any(s["x"] == board_width-1 and s["y"] == 0 for s in occupied_squares):
+        coordinate["x"] = board_width-1
+        coordinate["y"] = 0
+        empty_square_found = True
+
+    elif not any(s["x"] == board_width-1 and s["y"] == board_height-1 for s in occupied_squares):
+        coordinate["x"] = board_width-1
+        coordinate["y"] = board_height-1
+        empty_square_found = True
+
+    if empty_square_found:
         flood_fill(coordinate, occupied_squares, filled_squares, board_width, board_height)
+
     else:
-        # Use the first food tile if the corners are unavailable.
         coordinate['x'] = game_state['board']['food'][0]['x']
         coordinate['y'] = game_state['board']['food'][0]['y']
-        flood_fill(coordinate, occupied_squares, filled_squares, board_width, board_height)
-    
-    return filled_squares
 
+        flood_fill(coordinate, occupied_squares, filled_squares, board_width, board_height)
 
 
 #

@@ -38,6 +38,57 @@ def start(game_state: typing.Dict):
 def end(game_state: typing.Dict):
     print("GAME OVER\n")
 
+def AStar(goal, my_head,board_height, board_width,is_move_safe):
+    
+    Bx = board_width
+    By = board_height
+    curX = my_head["x"]
+    curY = my_head["y"]
+    total = Bx*By
+    result = 0
+
+    Path = [total]
+    visited = [total]
+
+    for i in total:  #goes through every node
+        Path[i] = 1001  #Pretend this is infiine distance
+        visited[i] = 0  # 0 = not visited 1 = visited
+
+    curpos = (curX-1)*(curY-1)
+    Path[curpos] = 0 
+    for i in total:    
+        for j in total:
+            if Path[j] == 1001:
+                 curpos = i
+                 break
+        for j in total:
+            if visited[j] == 0 & (Path[j] < Path[curpos]):
+                curpos = j
+        
+        visited[curpos] = 1
+        if Path[curpos] == 1001:
+            result = -1
+
+
+        Next = []
+
+        if is_move_safe["up"]==True:
+            Next.append(curpos-By)
+        if is_move_safe["down"]==True:
+            Next.append(curpos+By)
+        if is_move_safe["left"]==True:
+            Next.append(curpos-1)
+        if is_move_safe["right"]==True:
+            Next.append(curpos+1)
+        for j in Next:
+            w = Next[j]
+            if Path[w] > Path[curpos]:
+                o = Path[curpos]
+                Path[w] = o + 1
+                
+    result = Path[goal-1]
+    return result
+
 def flood_fill(coordinate: typing.Dict, occupied_squares: typing.Dict, filled_squares: typing.Dict, width, height):
     # base case: x coordinate is < 0
     if(coordinate['x'] < 0):

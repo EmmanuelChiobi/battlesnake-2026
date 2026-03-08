@@ -5,3 +5,4 @@ NJIT Battlesnake 2026 repo for Shadow Wizard Money Gang
 - Emmanuel Chiobi`
 - Arminder Singh
 - Gianfranco Martinez
+- Angeley Delva

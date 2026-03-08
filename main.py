@@ -62,7 +62,7 @@ def flood_fill(coordinate: typing.Dict, occupied_squares: typing.Dict, filled_sq
     
     # append the current coordinate to the filled_squares list.
     new_coordinate_to_be_filled = {
-        "x": -1
+        "x": -1,
         "y": -1
     }
     new_coordinate_to_be_filled['x'] = coordinate['x']
@@ -70,22 +70,22 @@ def flood_fill(coordinate: typing.Dict, occupied_squares: typing.Dict, filled_sq
     filled_squares.append(new_coordinate_to_be_filled)
 
     next_left = {
-        "x": coordinate['x'] - 1
+        "x": coordinate['x'] - 1,
         "y": coordinate['y']
     }
     next_left = typed.Dict(next_left)
     next_up = {
-        "x": coordinate['x']
+        "x": coordinate['x'],
         "y": coordinate['y'] + 1
     }
     next_up = typed.Dict(next_up)
     next_right = {
-        "x": coordinate['x'] + 1
+        "x": coordinate['x'] + 1,
         "y": coordinate['y']
     }
     next_right = typed.Dict(next_right)
     next_down = {
-        "x": coordinate['x']
+        "x": coordinate['x'],
         "y": coordinate['y'] - 1
     }
     next_down = typed.Dict(next_down)
@@ -103,7 +103,7 @@ def flood_fill_game_state(game_state: typing.Dict):
     board_height = game_state['board']['height']
     empty_square_found = False
     coordinate = {
-        "x": -1
+        "x": -1,
         "y": -1
     }
     #

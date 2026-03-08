@@ -62,8 +62,8 @@ def flood_fill(coordinate: typing.Dict, occupied_squares: typing.Dict, filled_sq
     
     # append the current coordinate to the filled_squares list.
     new_coordinate_to_be_filled = {
-        "x":-1
-        "y":-1
+        "x": -1,
+        "y": -1
     }
     new_coordinate_to_be_filled['x'] = coordinate['x']
     new_coordinate_to_be_filled['y'] = coordinate['y']

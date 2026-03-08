@@ -324,18 +324,19 @@ def move(game_state: typing.Dict) -> typing.Dict:
     if (is_recovering_health == True):
         # if we're looking for food, use A-star on each of the food points to find the closest.
         food = game_state['board']['food']
-        result_path = AStar(food[0]['x'], my_head, board_height, board_width, is_move_safe)
+        result_path = AStar((food[0]['x']-1)*(food[0]['y']-1), my_head, board_height, board_width, is_move_safe)
         # TODO: set next_move here based on closest food point
 
     else:
         if (current_heuristic == 0):
             # get to open space.
-            result_path = AStar(filled_squares[0]['x'], my_head, board_height, board_width, is_move_safe)
+            result_path = AStar((filled_squares[0]['x']-1)*(filled_squares[0]['y']-1), my_head, board_height, board_width, is_move_safe)
 
 
         elif (current_heuristic == 1):
             # get to a snake head.
             # unimplemented
+            result_path = AStar((filled_squares[1]['x']-1)*(filled_squares[1]['y']-1), my_head, board_height, board_width, is_move_safe)
 
 
     # TODO: Step 4 - Move towards food instead of random, to regain health and survive longer

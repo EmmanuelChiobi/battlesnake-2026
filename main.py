@@ -148,7 +148,7 @@ def flood_fill(coordinate: typing.Dict, occupied_squares: typing.Dict, filled_sq
     flood_fill(next_right, occupied_squares, filled_squares, width, height)
     flood_fill(next_down, occupied_squares, filled_squares, width, height)
 
-def flood_fill_game_state(game_state: typing.Dict):
+def flood_fill_game_state(game_state: typing.Dict) -> typing.Dict:
     # first get the width and height of the board from game state.
     board_width = game_state['board']['width']
     board_height = game_state['board']['height']
@@ -197,6 +197,8 @@ def flood_fill_game_state(game_state: typing.Dict):
         coordinate['x'] = game_state['board']['food'][0]['x']
         coordinate['y'] = game_state['board']['food'][0]['y']
         flood_fill(coordinate, occupied_squares, filled_squares, board_width, board_height)
+    
+    return filled_squares
 
 
 
@@ -211,6 +213,21 @@ def move(game_state: typing.Dict) -> typing.Dict:
 
     # this array is saying "is this move going to end in a collision or not"
     is_move_safe = {"up": True, "down": True, "left": True, "right": True}
+    filled_squares = {}
+    filled_squares = typing.Dict(filled_squares)
+    opponents = game_state['board']['snakes']
+    num_snakes = len(opponents)
+
+    current_heuristic = 0 # 0 = defense, 1 = offense
+    is_recovering_health = False
+
+    if game_state["you"]["health"] < 30:
+        # below 30 health, start seeking food
+        is_recovering_health = True
+    
+    if (num_opponents == 2):
+        current_heuristic = 1 # switch to offense for the two-snake case
+
 
     # We've included code to prevent your Battlesnake from moving backwards
     my_head = game_state["you"]["body"][0]  # Coordinates of your head
@@ -258,15 +275,30 @@ def move(game_state: typing.Dict) -> typing.Dict:
             is_move_safe["up"] = False
         if ((my_head["x"] - 1) == my_body[i]["x"]):
             # implies that a part of the snake body is to the left the head
-            is_move_safe["down"] = False
+            is_move_safe["left"] = False
         if ((my_head["x"] + 1) == my_body[i]["x"]):
             # implies that a part of the snake body is to the right the head
-            is_move_safe["up"] = False
+            is_move_safe["right"] = False
 
     # TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
-    # opponents = game_state['board']['snakes']
+    for opponent in opponents:
+        for i in range(0, opponent['length']-1):
+            # last part of length is the tail itself, which always recedes so do not count the tail in the segments we are checking.
+            if ((my_head["y"] - 1) == opponent["body"][i]["y"]):
+                # implies that a part of the snake body is right below the head
+                is_move_safe["down"] = False
+            if ((my_head["y"] + 1) == opponent["body"][i]["y"]):
+                # implies that a part of the snake body is right above the head
+                is_move_safe["up"] = False
+            if ((my_head["x"] - 1) == opponent["body"][i]["x"]):
+                # implies that a part of the snake body is to the left the head
+                is_move_safe["left"] = False
+            if ((my_head["x"] + 1) == opponent["body"][i]["x"]):
+                # implies that a part of the snake body is to the right the head
+                is_move_safe["right"] = False
 
 
+    filled_squares = flood_fill_game_state(game_state)
 
     # Are there any safe moves left?
     safe_moves = []
@@ -286,7 +318,20 @@ def move(game_state: typing.Dict) -> typing.Dict:
     #
 
     # 
-    next_move = random.choice(safe_moves)
+    next_move = random.choice(safe_moves) # default to picking a random move
+
+    if (is_recovering_health == True):
+        # if we're looking for food, use A-star on each of the food points to find the closest.
+        food = game_state['board']['food']
+
+        # TODO: set next_move here based on closest food point
+    else:
+        if (current_heuristic == 0):
+            # get to open space.
+
+        elif (current_heuristic == 1):
+            # get to a snake head.
+
 
     # TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
     # food = game_state['board']['food']

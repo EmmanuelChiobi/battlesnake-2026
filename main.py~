@@ -130,7 +130,7 @@ def flood_fill_game_state(game_state: typing.Dict):
             if dict['head']['y'] != board_height:
                 empty_square_found = True
                 break
-        else if dict['head']['x'] != board_width:
+        elif dict['head']['x'] != board_width:
             coordinate['x'] = board_width
             if dict['head']['y'] != 0:
                 empty_square_found = True

@@ -215,7 +215,7 @@ def move(game_state: typing.Dict) -> typing.Dict:
     # this array is saying "is this move going to end in a collision or not"
     is_move_safe = {"up": True, "down": True, "left": True, "right": True}
     filled_squares = {}
-    filled_squares = typing.Dict(filled_squares)
+    filled_squares = typing.dict(filled_squares)
     opponents = game_state['board']['snakes']
     num_snakes = len(opponents)
 
